@@ -1,0 +1,19 @@
+### Get OIDC Configuration
+GET /{{tenant_id}}/v2.0/.well-known/openid-configuration
+Host: login.microsoftonline.com:443
+
+### Sign in
+GET /{{tenant_id}}/oauth2/v2.0/authorize
+Host: login.microsoftonline.com:443
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{client_id}}
+&response_type=id_token token
+&redirect_uri={{redirect_uri}}
+&response_mode=form_post
+&scope=openid+profile+email
+&state=12345
+&nonce=678910
+
+### Get user token
+

@@ -1,0 +1,11 @@
+<div>
+    <h2>Profile</h2>
+    <p>username: {{ user.name }}</p>
+    <p>email: {{ user.email }}</p>
+    <p>id: {{ user.id}}</p>
+</div>
+
+<form method="get" action="{{ url_for('main.logout') }}">
+    <input type="hidden" name="csrf_token" value={{ csrf_token() }}>
+    <button id="logout-button" type="submit">Logout</button>
+</form>

@@ -1,0 +1,10 @@
+Welcome to the OIDC Demo App!
+<br/>
+Click login button to authenticate
+
+{% if not user.is_authenticated  %}
+<form method="post" action="login">
+    <input type="hidden" name="csrf_token" value={{ csrf_token() }}>
+    <button id="login-button" type="submit">Login</button>
+</form>
+{% endif %}
