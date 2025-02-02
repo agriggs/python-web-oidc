@@ -6,6 +6,7 @@ import secrets
 import os
 import logging
 from datetime import timedelta
+import jwt
 
 from flask import Blueprint, render_template, send_from_directory, redirect, request, session, g, url_for, current_app as app, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
@@ -103,8 +104,13 @@ def callback():
            raise Exception("Unsupported token type. Should be 'Bearer'")
         access_token = exchange["access_token"]
         id_token = exchange["id_token"] # Used for logout
-
+        
         logging.debug(f"access token from IdP: {access_token}")
+
+        # Decode access token
+        # TODO: Validate the access token
+        decoded_access_token = jwt.decode(access_token, options={"verify_signature": False})
+        logging.debug(f"decoded access token: {decoded_access_token}")
 
         logging.debug("Request user info from IdP")
         # Authorization flow successful, get userinfo and login user
@@ -113,12 +119,18 @@ def callback():
             headers={'Authorization': f'Bearer {access_token}'}, 
             verify=verify_ssl
         ).json()
-
+        
         user_sub = userinfo_response["sub"]    
-        user_email = userinfo_response["email"]
-        user_name = userinfo_response["email"]        
+        user_email = userinfo_response.get("email", "")
+        if not user_email:
+            if IDP_DOMAIN == "login.microsoftonline.com":
+                user_name = decoded_access_token["upn"]
+            else:
+                raise Exception("Okta email or username need to be defined")
+        else:
+            user_name = userinfo_response["email"]        
 
-        logging.debug(f"user info from IdP: sub[{user_sub}], email[{user_email}]")
+        logging.debug(f"user info from IdP: sub[{user_sub}], user_name[{user_name}], email[{user_email}]")
        
         idp_user = User(
             id=user_sub, name=user_name, email=user_email, idp_token=id_token
