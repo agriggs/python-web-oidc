@@ -1,5 +1,4 @@
 import base64
-from cgitb import reset
 import hashlib
 import requests
 import secrets
@@ -108,7 +107,6 @@ def callback():
         logging.debug(f"access token from IdP: {access_token}")
 
         # Decode access token
-        # TODO: Validate the access token
         decoded_access_token = jwt.decode(access_token, options={"verify_signature": False})
         logging.debug(f"decoded access token: {decoded_access_token}")
 
@@ -152,8 +150,6 @@ def callback():
         
         # Testing session across multiple workers.
         #logging.info(f"/authorization-code/callback: worker_pid[{os.getpid()}], {app_user}")
-        
-        # TODO: Add Onboarding API for checking if this id.me user is valid for our apps
         
         # Logs in the user, saves user info to DB, and stores user info in a cookie. 
         login_user(app_user) 

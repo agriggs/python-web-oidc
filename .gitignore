@@ -3,3 +3,4 @@ _env*
 settings.json
 *.pyc
 instance
+__pycache__/
